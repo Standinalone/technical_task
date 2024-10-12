@@ -25,11 +25,17 @@ DROP TABLE IF EXISTS `fish`;
 CREATE TABLE `fish` (
   `id` int NOT NULL AUTO_INCREMENT,
   `catch_date` datetime(6) DEFAULT NULL,
-  `image_file_name` varchar(255) DEFAULT NULL,
   `name` varchar(255) DEFAULT NULL,
   `price` double NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `image_file_names` (
+  `fish_id` int NOT NULL,
+  `image_file_name` varchar(255)
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+ALTER TABLE `image_file_names` ADD CONSTRAINT `FK_image_file_names_fish` FOREIGN KEY (fish_id) REFERENCES `fish` (id);
+
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

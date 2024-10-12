@@ -55,8 +55,10 @@ public class FishController {
 			
 			Fish fish = repo.findById(id).get();
 			
-			Path imagePath = Paths.get("public/images/"+fish.getImageFileName());
-			Files.delete(imagePath);
+			for (String imageFileName : fish.getImageFileNames()) {
+				Path imagePath = Paths.get("public/images/" + imageFileName);
+				Files.delete(imagePath);
+			}
 			repo.delete(fish);
 			
 		}catch(Exception ex) {
@@ -69,7 +71,7 @@ public class FishController {
 	@PostMapping("/create")
 	public String addFish(@Valid @ModelAttribute FishDto fishDto, BindingResult result) {
 		
-		if(fishDto.getImageFile().isEmpty()) {
+		if (fishDto.getImageFiles().isEmpty()) {
 			result.addError(new FieldError("fishDto", "imageFile", "Потрібне фото рибки"));
 		}
 		
@@ -77,10 +79,10 @@ public class FishController {
 			return "createFish";
 		}
 		
-		MultipartFile image = fishDto.getImageFile();
+		List<MultipartFile> images = fishDto.getImageFiles();
 		Date catchDate = new Date();
-		String  storageFileName = catchDate.getTime() + "_" + image.getOriginalFilename();
 		
+		Fish fish = new Fish();
 		try {
 			String uploadDir = "public/images/";
 			Path uploadPath = Paths.get(uploadDir);
@@ -89,18 +91,18 @@ public class FishController {
 				Files.createDirectories(uploadPath);
 			}
 			
-			try(InputStream inputStream = image.getInputStream()){
-				Files.copy(inputStream, Paths.get(uploadDir+storageFileName), StandardCopyOption.REPLACE_EXISTING);
+			for (MultipartFile image : images) {
+				String storageFileName = catchDate.getTime() + "_" + image.getOriginalFilename();
+				fish.getImageFileNames().add(storageFileName);
+				try (InputStream inputStream = image.getInputStream()) {
+					Files.copy(inputStream, Paths.get(uploadDir + storageFileName), StandardCopyOption.REPLACE_EXISTING);
+				}
 			}
-			
-		}catch(Exception ex) {
+		} catch(Exception ex) {
 			System.out.println("Exception: " + ex.getMessage());
 		}
 		
-		Fish fish = new Fish();
-		
 		fish.setCatchDate(catchDate);
-		fish.setImageFileName(storageFileName);
 		fish.setName(fishDto.getName());
 		fish.setPrice(fishDto.getPrice());
 		

@@ -47,8 +47,8 @@
             <td th:text="${fish.price} + '₴'"></td>
             <td th:text="${fish.catchDate.toString().substring(0,10)}"></td>
             <td>
-              <div class="image-container">
-                <img th:src="@{'/images/'+${fish.imageFileName}}" alt="..." width="100">
+              <div class="image-container" th:each="imgPath : ${fish.imageFileNames}">
+                <img th:src="@{'/images/'+${imgPath}}" alt="..." width="100">
               </div>
             </td>
             <td>
