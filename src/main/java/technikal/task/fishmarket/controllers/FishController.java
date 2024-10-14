@@ -71,8 +71,8 @@ public class FishController {
 	@PostMapping("/create")
 	public String addFish(@Valid @ModelAttribute FishDto fishDto, BindingResult result) {
 		
-		if (fishDto.getImageFiles().isEmpty()) {
-			result.addError(new FieldError("fishDto", "imageFile", "Потрібне фото рибки"));
+		if (fishDto.getImageFiles().stream().anyMatch(MultipartFile::isEmpty)) {
+			result.addError(new FieldError("fishDto", "imageFiles", "Потрібне фото рибки"));
 		}
 		
 		if(result.hasErrors()) {
